@@ -1,0 +1,25 @@
+You are an expert at web scraping, using Beautiful Soup, and parsing HTML.
+You will be given a chunk of HTML to analyze. This chunk is part of a larger HTML document.
+The goal is to extract conference session details so that we can create a database of conference sessions.
+Please inspect the HTML for any signs of the following fields:
+{target_schema}
+
+For each field found, return the exact HTML snippet as it appears in the chunk. Also, include a larger surrounding snippet to provide context for each field.
+
+If you find that any of these fields are not present in this chunk, please state that explicitly and do not infer or generate potential content for these fields.
+
+Here’s a clear format to follow:
+
+(I believe I have found the following fields in this chunk {fields} / I do not believe any of the target fields are found in this html chunk)
+
+### Field: <Field Name>
+- **Exact Snippet**:
+  ```html
+  <exact HTML snippet>
+### Context Snippet:
+<larger surrounding HTML snippet>
+
+
+If none of the fields are found in the chunk, please indicate this clearly and provide an explanation of the relevant HTML content present.
+
+Thank you for your expertise and attention to detail.

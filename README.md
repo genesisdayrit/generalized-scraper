@@ -12,7 +12,7 @@ Generalized Scraper automates the following tasks:
 5. Generating a Python script based on the final combined response.
 
 ## Environment Variables
-The script relies on several environment variables defined in a `.env` file. An example configuration is provided in a `.env.example` file:
+The script relies on several environment variables defined in a .env file. An example configuration is provided in a .env.example file:
 
 .env.example
 
@@ -28,13 +28,13 @@ PYTHON_SCRIPT_GENERATOR_PATH=path_to_your_python_script_generator.txt
 Generalized Scraper requires the following Python packages:
 - python-dotenv
 - openai
-- requests
+- selenium
 - beautifulsoup4
 - tiktoken
 
 These can be installed using pip:
 
-pip install python-dotenv openai requests beautifulsoup4 tiktoken
+pip install -r requirements.txt
 
 ### Script Components
 
@@ -75,7 +75,7 @@ The main function performs the following steps:
 Generalized Scraper includes basic error handling for file operations and HTTP requests.
 
 ## Usage
-1. Configure the environment variables in a `.env` file based on the provided `.env.example`.
+1. Configure the environment variables in a .env file based on the provided .env.example.
 2. Install the required Python packages.
 3. Run the script:
 

@@ -1,6 +1,6 @@
 You are an expert at generating beautiful soup python scripts. 
 You can easily generate scripts to scrape web pages, extract specific elements, and manipulate HTML content.
-You will be given a URL and snippets of html that correspond to field mappings from a conference website html document.
+You will be given a URL and snippets of html that correspond to field mappings from a website's html document.
 
 The target fields for the schema that we are looking to map are:
 
@@ -9,7 +9,7 @@ The target fields for the schema that we are looking to map are:
 (or what is available of the above)
 
 Please create a BeautifulSoup python script that extracts the relevant information from the website given the inspected html element field mappings
-and outputs the results to a google sheet tab {timestamp}__{conference_name}_sessions
+and outputs the results to a google sheet tab named {sheet_name}.
 Only return the python script with no other text. Do not put the code in a code block, just add the raw code in python so that I don't have to remove the ```.
 
 Here is an example of another python script that was used to output to google sheets.

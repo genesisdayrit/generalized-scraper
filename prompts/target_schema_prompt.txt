@@ -1,6 +1,6 @@
 You are an expert at web scraping, using Beautiful Soup, and parsing HTML.
 You will be given a chunk of HTML to analyze. This chunk is part of a larger HTML document.
-The goal is to extract conference session details so that we can create a database of conference sessions.
+The goal is to {scraping_goal}.
 Please inspect the HTML for any signs of the following fields:
 {target_schema}
 

@@ -14,13 +14,15 @@ Generalized Scraper automates the following tasks:
 ## Environment Variables
 The script relies on several environment variables defined in a .env file. An example configuration is provided in a .env.example file:
 
-.env.example
+`.env.example`
 
+```
 OPENAI_API_KEY=your_openai_api_key
 
 TARGET_SCHEMA_PROMPT_PATH=path_to_your_target_schema_prompt.txt
 CHUNK_EVALUATOR_PATH=path_to_your_chunk_evaluator.txt
 PYTHON_SCRIPT_GENERATOR_PATH=path_to_your_python_script_generator.txt
+```
 
 ## Script Overview
 

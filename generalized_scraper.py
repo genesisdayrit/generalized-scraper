@@ -2,10 +2,14 @@ import os
 import sys
 from dotenv import load_dotenv
 from openai import OpenAI
-import requests
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 import tiktoken
 import datetime
+import time
 
 # Load environment variables
 load_dotenv()
@@ -77,94 +81,102 @@ def process_chunks(chunks, system_prompt):
 def main():
     url = input("Enter the URL of the website to scrape: ")
 
-    response = requests.get(url)
-    if response.status_code == 200:
-        soup = BeautifulSoup(response.text, 'html.parser')
-        html_content = soup.prettify()
+    # Set up Selenium WebDriver
+    driver = webdriver.Chrome()
+    driver.get(url)
+    
+    # Wait for the page to load dynamically and sleep for designated seconds
+    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+    time.sleep(5)
 
-        token_count = calculate_token_count(html_content)
-        word_count = calculate_word_count(html_content)
-        memory_size_mb = estimate_memory_size(html_content)
-        char_count = len(html_content)
-        page_count = estimate_page_count(char_count)
+    # Get the page source and parse with BeautifulSoup
+    soup = BeautifulSoup(driver.page_source, 'html.parser')
+    html_content = soup.prettify()
 
-        print(f"HTML Content Length: {char_count} characters")
-        print(f"Estimated Token Count: {token_count}")
-        print(f"Word Count: {word_count}")
-        print(f"Estimated Memory Size: {memory_size_mb:.2f} MB")
-        print(f"Estimated Google Docs Page Count: {page_count:.2f} pages")
+    # Close the browser
+    driver.quit()
 
-        num_chunks = int(input("Enter the number of chunks you want to create: "))
+    # Calculate various metrics
+    token_count = calculate_token_count(html_content)
+    word_count = calculate_word_count(html_content)
+    memory_size_mb = estimate_memory_size(html_content)
+    char_count = len(html_content)
+    page_count = estimate_page_count(char_count)
 
-        chunk_length = char_count // num_chunks
-        remainder = char_count % num_chunks
+    print(f"HTML Content Length: {char_count} characters")
+    print(f"Estimated Token Count: {token_count}")
+    print(f"Word Count: {word_count}")
+    print(f"Estimated Memory Size: {memory_size_mb:.2f} MB")
+    print(f"Estimated Google Docs Page Count: {page_count:.2f} pages")
 
-        chunks = []
-        for i in range(num_chunks):
-            start = i * chunk_length
-            if i == num_chunks - 1:
-                end = start + chunk_length + remainder
-            else:
-                end = start + chunk_length
-            chunks.append(html_content[start:end])
+    num_chunks = int(input("Enter the number of chunks you want to create: "))
 
-        timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+    chunk_length = char_count // num_chunks
+    remainder = char_count % num_chunks
 
-        # Save and output the chunks
-        for i, chunk in enumerate(chunks):
-            chunk_filename = f"{timestamp}_html_chunk_{i + 1}.html"
-            save_to_file(chunk, chunk_filename)
-            print(f"Saved chunk {i + 1} to {chunk_filename}")
+    chunks = []
+    for i in range(num_chunks):
+        start = i * chunk_length
+        if i == num_chunks - 1:
+            end = start + chunk_length + remainder
+        else:
+            end = start + chunk_length
+        chunks.append(html_content[start:end])
 
-        system_prompt = read_file_content(config["system_prompt_path"])
+    timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 
-        responses = process_chunks(chunks, system_prompt)
+    # Save and output the chunks
+    for i, chunk in enumerate(chunks):
+        chunk_filename = f"{timestamp}_html_chunk_{i + 1}.html"
+        save_to_file(chunk, chunk_filename)
+        print(f"Saved chunk {i + 1} to {chunk_filename}")
 
-        final_response = "\n".join(responses)
-        final_filename = f"{timestamp}_final_response.txt"
-        save_to_file(final_response, final_filename)
-        print(f"Final concatenated response saved to {final_filename}")
+    system_prompt = read_file_content(config["system_prompt_path"])
 
-        # Pass the concatenated response through the chunk evaluator
-        chunk_evaluator_prompt = read_file_content(config["chunk_evaluator_path"])
+    responses = process_chunks(chunks, system_prompt)
 
-        evaluation_completion = client.chat.completions.create(
-            model="gpt-4o",
-            temperature=0.7,
-            messages=[
-                {"role": "system", "content": chunk_evaluator_prompt},
-                {"role": "user", "content": final_response}
-            ]
-        )
-        evaluation_response = evaluation_completion.choices[0].message.content
-        evaluation_filename = f"{timestamp}_evaluation_summary.txt"
-        save_to_file(evaluation_response, evaluation_filename)
-        print(f"Evaluation summary saved to {evaluation_filename}")
+    final_response = "\n".join(responses)
+    final_filename = f"{timestamp}_final_response.txt"
+    save_to_file(final_response, final_filename)
+    print(f"Final concatenated response saved to {final_filename}")
 
-        # Concatenate final_response with evaluation summary
-        combined_response = f"Final Responses:\n{final_response}\n\nEvaluation Summary:\n{evaluation_response}"
-        combined_filename = f"{timestamp}_combined_response.txt"
-        save_to_file(combined_response, combined_filename)
-        print(f"Combined response saved to {combined_filename}")
+    # Pass the concatenated response through the chunk evaluator
+    chunk_evaluator_prompt = read_file_content(config["chunk_evaluator_path"])
 
-        # Pass the combined response through the Python script generator
-        python_script_generator_prompt = read_file_content(config["python_script_generator_path"])
+    evaluation_completion = client.chat.completions.create(
+        model="gpt-4o",
+        temperature=0.7,
+        messages=[
+            {"role": "system", "content": chunk_evaluator_prompt},
+            {"role": "user", "content": final_response}
+        ]
+    )
+    evaluation_response = evaluation_completion.choices[0].message.content
+    evaluation_filename = f"{timestamp}_evaluation_summary.txt"
+    save_to_file(evaluation_response, evaluation_filename)
+    print(f"Evaluation summary saved to {evaluation_filename}")
 
-        python_script_completion = client.chat.completions.create(
-            model="gpt-4o",
-            temperature=0.7,
-            messages=[
-                {"role": "system", "content": python_script_generator_prompt},
-                {"role": "user", "content": f"URL: {url}\n\nCombined Response:\n{combined_response}"}
-            ]
-        )
-        python_script_response = python_script_completion.choices[0].message.content
-        python_script_filename = f"{timestamp}_scraping_script.py"
-        save_to_file(python_script_response, python_script_filename)
-        print(f"Python script saved to {python_script_filename}")
+    # Concatenate final_response with evaluation summary
+    combined_response = f"Final Responses:\n{final_response}\n\nEvaluation Summary:\n{evaluation_response}"
+    combined_filename = f"{timestamp}_combined_response.txt"
+    save_to_file(combined_response, combined_filename)
+    print(f"Combined response saved to {combined_filename}")
 
-    else:
-        print(f'Failed to retrieve the webpage. Status code: {response.status_code}')
+    # Pass the combined response through the Python script generator
+    python_script_generator_prompt = read_file_content(config["python_script_generator_path"])
+
+    python_script_completion = client.chat.completions.create(
+        model="gpt-4o",
+        temperature=0.7,
+        messages=[
+            {"role": "system", "content": python_script_generator_prompt},
+            {"role": "user", "content": f"URL: {url}\n\nCombined Response:\n{combined_response}"}
+        ]
+    )
+    python_script_response = python_script_completion.choices[0].message.content
+    python_script_filename = f"{timestamp}_scraping_script.py"
+    save_to_file(python_script_response, python_script_filename)
+    print(f"Python script saved to {python_script_filename}")
 
 if __name__ == "__main__":
     main()

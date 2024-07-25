@@ -1,10 +1,10 @@
-# HTMLChunkProcessor
+# Generalized Scraper
 
 ## Abstract
-HTMLChunkProcessor is a Python script designed to retrieve, process, and evaluate HTML content from a specified URL. The script divides the content into chunks, processes these chunks using OpenAI's GPT models, and generates a final evaluation and response. The aim is to automate and streamline the evaluation and processing of HTML content for various purposes.
+Generalized Scraper is a Python script designed to retrieve, process, and evaluate HTML content from a specified URL. The script divides the content into chunks, processes these chunks using OpenAI's GPT models, and generates a final evaluation and response. The aim is to automate and streamline the evaluation and processing of HTML content for various purposes.
 
 ## Introduction
-HTMLChunkProcessor automates the following tasks:
+Generalized Scraper automates the following tasks:
 1. Retrieving HTML content from a specified URL.
 2. Chunking the HTML content into manageable pieces.
 3. Processing each chunk using OpenAI's GPT models.
@@ -25,7 +25,7 @@ PYTHON_SCRIPT_GENERATOR_PATH=path_to_your_python_script_generator.txt
 ## Script Overview
 
 ### Dependencies
-HTMLChunkProcessor requires the following Python packages:
+Generalized Scraper requires the following Python packages:
 - python-dotenv
 - openai
 - requests
@@ -48,7 +48,7 @@ It initializes the OpenAI client using the API key from environment variables.
 The paths to necessary configuration files are defined using environment variables.
 
 #### Utility Functions
-HTMLChunkProcessor contains several utility functions:
+Generalized Scraper contains several utility functions:
 - read_file_content: Reads the content of a file.
 - calculate_token_count: Calculates the number of tokens in a text.
 - calculate_word_count: Calculates the number of words in a text.
@@ -72,7 +72,7 @@ The main function performs the following steps:
 11. Generates a Python script based on the combined response.
 
 ### Error Handling
-HTMLChunkProcessor includes basic error handling for file operations and HTTP requests.
+Generalized Scraper includes basic error handling for file operations and HTTP requests.
 
 ## Usage
 1. Configure the environment variables in a `.env` file based on the provided `.env.example`.
@@ -82,4 +82,4 @@ HTMLChunkProcessor includes basic error handling for file operations and HTTP re
 python your_script_name.py
 
 ## Conclusion
-HTMLChunkProcessor provides an automated solution for processing and evaluating HTML content from a web page. By leveraging OpenAI's GPT models, it can efficiently handle large amounts of text and generate useful insights and scripts based on the processed content. This README outlines the script's functionality and provides guidance on setup and usage. Feedback and suggestions for improvement are welcome.
+Generalized Scraper provides an automated solution for processing and evaluating HTML content from a web page. By leveraging OpenAI's GPT models, it can efficiently handle large amounts of text and generate useful insights and scripts based on the processed content. This README outlines the script's functionality and provides guidance on setup and usage. Feedback and suggestions for improvement are welcome.

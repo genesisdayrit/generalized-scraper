@@ -34,7 +34,9 @@ Generalized Scraper requires the following Python packages:
 
 These can be installed using pip:
 
+```
 pip install -r requirements.txt
+```
 
 ### Script Components
 
@@ -79,7 +81,9 @@ Generalized Scraper includes basic error handling for file operations and HTTP r
 2. Install the required Python packages.
 3. Run the script:
 
-python your_script_name.py
+```
+python generalized_scraper.py
+```
 
 ## Conclusion
 Generalized Scraper provides an automated solution for processing and evaluating HTML content from a web page. By leveraging OpenAI's GPT models, it can efficiently handle large amounts of text and generate useful insights and scripts based on the processed content. This README outlines the script's functionality and provides guidance on setup and usage. Feedback and suggestions for improvement are welcome.

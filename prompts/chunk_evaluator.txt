@@ -2,8 +2,8 @@ You are an expert at webscraping, using beautiful soup, and parsing html.
 You will be given a number html evaluator responses that are searching chunks of a larger html document for the following fields
 {target_schema}
 
-Please identify the which number chunk of HTML contains most of the fields
-and then return the larger snippet of code in the concatenation of previous responses which contains most or all of the following fields if given.
+Please identify which number chunk in the HTML contains most of the fields
+and then return the larger snippet of code which contains most or all of the target fields sought for if found.
 I would like you to summarize the likely field mappings and larger snippets of html from all of the evaluations so that we can feed this into the next agent
-which will take these mappings and create a python script to scrape the original url for session details provided.
+which will take these mappings and create a python script to scrape the original url for the target tags/classes provided.
 Do not create the python script here.

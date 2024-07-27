@@ -109,6 +109,15 @@ def main():
     print(f"Estimated Memory Size: {memory_size_mb:.2f} MB")
     print(f"Estimated Google Docs Page Count: {page_count:.2f} pages")
 
+    max_token_context_length = 128000
+    recommended_token_chunk_size = 30000
+
+    min_chunks = token_count // max_token_context_length + (1 if token_count % max_token_context_length > 0 else 0)
+    recommended_chunks = token_count // recommended_token_chunk_size + (1 if token_count % recommended_token_chunk_size > 0 else 0)
+
+    print(f"\nMinimum number of chunks based on maximum token context length ({max_token_context_length} tokens): {min_chunks}")
+    print(f"Recommended number of chunks for optimal processing (~{recommended_token_chunk_size} tokens each): {recommended_chunks}\n")
+
     num_chunks = int(input("Enter the number of chunks you want to create: "))
 
     chunk_length = char_count // num_chunks

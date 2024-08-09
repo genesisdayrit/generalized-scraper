@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 import tiktoken
 import datetime
 import time
+import re
 
 # Load environment variables
 load_dotenv()
@@ -60,6 +61,20 @@ def save_to_file(text, filename):
     with open(filename, 'w', encoding='utf-8') as file:
         file.write(text)
 
+def create_directory_for_domain(url):
+    # Remove protocol (http://, https://) and trailing slash
+    domain = re.sub(r"https?://", "", url)
+    domain = domain.rstrip('/')
+
+    # Replace special characters with underscores
+    domain = re.sub(r'\W+', '_', domain)
+
+    # Create directory path
+    directory_path = os.path.join('artifacts', domain)
+    os.makedirs(directory_path, exist_ok=True)
+    
+    return directory_path
+
 def process_chunks(chunks, system_prompt):
     responses = []
     total_chunks = len(chunks)
@@ -80,6 +95,9 @@ def process_chunks(chunks, system_prompt):
 
 def main():
     url = input("Enter the URL of the website to scrape: ")
+
+    # Create directory based on the domain
+    directory_path = create_directory_for_domain(url)
 
     # Set up Selenium WebDriver
     driver = webdriver.Chrome()
@@ -132,11 +150,11 @@ def main():
             end = start + chunk_length
         chunks.append(html_content[start:end])
 
-    timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H%M")
 
     # Save and output the chunks
     for i, chunk in enumerate(chunks):
-        chunk_filename = f"{timestamp}_html_chunk_{i + 1}.html"
+        chunk_filename = os.path.join(directory_path, f"{timestamp}_html_chunk_{i + 1}.html")
         save_to_file(chunk, chunk_filename)
         print(f"Saved chunk {i + 1} to {chunk_filename}")
 
@@ -145,7 +163,7 @@ def main():
     responses = process_chunks(chunks, system_prompt)
 
     final_response = "\n".join(responses)
-    final_filename = f"{timestamp}_final_response.txt"
+    final_filename = os.path.join(directory_path, f"{timestamp}_final_response.txt")
     save_to_file(final_response, final_filename)
     print(f"Final concatenated response saved to {final_filename}")
 
@@ -161,13 +179,13 @@ def main():
         ]
     )
     evaluation_response = evaluation_completion.choices[0].message.content
-    evaluation_filename = f"{timestamp}_evaluation_summary.txt"
+    evaluation_filename = os.path.join(directory_path, f"{timestamp}_evaluation_summary.txt")
     save_to_file(evaluation_response, evaluation_filename)
     print(f"Evaluation summary saved to {evaluation_filename}")
 
     # Concatenate final_response with evaluation summary
     combined_response = f"Final Responses:\n{final_response}\n\nEvaluation Summary:\n{evaluation_response}"
-    combined_filename = f"{timestamp}_combined_response.txt"
+    combined_filename = os.path.join(directory_path, f"{timestamp}_combined_response.txt")
     save_to_file(combined_response, combined_filename)
     print(f"Combined response saved to {combined_filename}")
 
@@ -183,7 +201,7 @@ def main():
         ]
     )
     python_script_response = python_script_completion.choices[0].message.content
-    python_script_filename = f"{timestamp}_scraping_script.py"
+    python_script_filename = os.path.join(directory_path, f"{timestamp}_scraping_script.py")
     save_to_file(python_script_response, python_script_filename)
     print(f"Python script saved to {python_script_filename}")
 

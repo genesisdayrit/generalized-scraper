@@ -1,0 +1,88 @@
+(this is an example python script for your llm context)
+
+import requests
+from bs4 import BeautifulSoup
+import json
+import datetime
+
+# Fetch the webpage
+url = "https://karpathy.ai/"
+response = requests.get(url)
+soup = BeautifulSoup(response.content, 'html.parser')
+
+# Extract the relevant information based on the provided field mappings
+data = {}
+
+# Extract Name
+name_tag = soup.find('h1')
+if name_tag:
+    data['name'] = name_tag.get_text(strip=True)
+
+# Extract Bio
+bio_tag = soup.find('div', {'id': 'bio'})
+if bio_tag:
+    data['bio'] = bio_tag.get_text(strip=True)
+
+# Extract Work History
+work_history = []
+history_container = soup.find('div', {'id': 'history'})
+if history_container:
+    for entry in history_container.find_all('div', class_='entry row'):
+        timespan = entry.find('div', class_='timespan').get_text(strip=True) if entry.find('div', class_='timespan') else ""
+        desc = entry.find('div', class_='desc').get_text(strip=True) if entry.find('div', class_='desc') else ""
+        work_history.append(f"{timespan} {desc}")
+if work_history:
+    data['work_history'] = work_history
+
+# Extract Featured Talks
+featured_talks = []
+talks_container = soup.find('div', {'id': 'featured-talks'})
+if talks_container:
+    for card in talks_container.find_all('div', class_='card'):
+        cdesc = card.find('div', class_='cdesc').get_text(strip=True) if card.find('div', class_='cdesc') else ""
+        featured_talks.append(cdesc)
+if featured_talks:
+    data['featured_talks'] = featured_talks
+
+# Extract Teaching
+teaching_container = soup.find('div', text='teaching')
+if teaching_container:
+    teaching_desc = teaching_container.find_next('div').get_text(strip=True)
+    if teaching_desc:
+        data['teaching'] = teaching_desc
+
+# Extract Featured Writing
+featured_writing = []
+writing_container = soup.find('div', text='featured writing')
+if writing_container:
+    for li in writing_container.find_next('ul').find_all('li'):
+        featured_writing.append(li.get_text(strip=True))
+if featured_writing:
+    data['featured_writing'] = featured_writing
+
+# Extract Pet Projects
+pet_projects = []
+projects_container = soup.find('div', {'id': 'pet-projects'})
+if projects_container:
+    for project in projects_container.find_all('div', class_='project'):
+        pdesc = project.find('div', class_='pdesc').get_text(strip=True) if project.find('div', class_='pdesc') else ""
+        pet_projects.append(pdesc)
+if pet_projects:
+    data['pet_projects'] = pet_projects
+
+# Extract Publications
+publications = []
+publications_container = soup.find('div', text='publications')
+if publications_container:
+    for pub in publications_container.find_next('div').find_all('div', class_='pub'):
+        pub_title = pub.find('div', class_='pub-title').get_text(strip=True) if pub.find('div', class_='pub-title') else ""
+        pub_venue = pub.find('div', class_='pub-venue').get_text(strip=True) if pub.find('div', class_='pub-venue') else ""
+        pub_authors = pub.find('div', class_='pub-authors').get_text(strip=True) if pub.find('div', class_='pub-authors') else ""
+        publications.append(f"{pub_title} {pub_venue} {pub_authors}")
+if publications:
+    data['publications'] = publications
+
+# Output to a timestamped JSON file
+timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+with open(f"data_{timestamp}.json", "w") as outfile:
+    json.dump(data, outfile, indent=4)
